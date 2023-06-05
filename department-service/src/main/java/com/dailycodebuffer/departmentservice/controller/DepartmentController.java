@@ -1,5 +1,6 @@
 package com.dailycodebuffer.departmentservice.controller;
 
+import com.dailycodebuffer.departmentservice.client.EmployeeClient;
 import com.dailycodebuffer.departmentservice.model.Department;
 import com.dailycodebuffer.departmentservice.repository.DepartmentRepository;
 import org.slf4j.Logger;
@@ -15,10 +16,13 @@ public class DepartmentController {
     // to publish logs from Zipkin
     private static final Logger LOGGER= LoggerFactory.getLogger(DepartmentController.class);
     private DepartmentRepository repository;
+    private EmployeeClient employeeClient;
     @Autowired
-    public DepartmentController(DepartmentRepository dependencyInjectionRepository) {
+    public DepartmentController(DepartmentRepository dependencyInjectionRepository, EmployeeClient employeeClient) {
         this.repository=dependencyInjectionRepository;
+        this.employeeClient = employeeClient;
     }
+
 @PostMapping
     public Department add(@RequestBody Department department) {
         LOGGER.info("Department add:{}",department);
@@ -35,5 +39,12 @@ public class DepartmentController {
     public Department findById(@PathVariable Long id) {
     LOGGER.info("Department find: id={}",id);
     return repository.findById(id);
+    }
+
+    @GetMapping("/with-employees")
+    public List<Department> findAllWithEmployees() {
+        List<Department> departments = repository.findAll();
+        departments.forEach(department -> department.setEmployees(employeeClient.findByDepartment(department.getId())));
+        return departments;
     }
 }

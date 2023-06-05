@@ -10,7 +10,7 @@ import java.util.List;
 public class DepartmentRepository {
     private List<Department> departments = new ArrayList<>();
 
-    // CRUD methods will be declared now and will be called from controller layer
+    // CRUD methods will be declared here and will be called from controller layer
 
     public Department addDeparment(Department department) {
         departments.add(department);
